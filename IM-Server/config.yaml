@@ -1,0 +1,168 @@
+# 基础运行配置
+app:
+  name: "Chat-IM"
+  mode: "debug" # debug/release
+  version: "1.0.0"
+  # 端口配置
+  port:
+    dev_http: 5625
+    dev_ws: 5625
+    prod_https: 5628
+    prod_wss: 5628
+  # 生产环境TLS证书配置
+  tls:
+    cert_path: "./certs/server.crt"  # 证书文件路径
+    key_path: "./certs/server.key"   # 私钥文件路径
+  # 跨域配置
+  cors:
+    allow_origins: ["http://localhost:5173", "https://your-domain.com"]
+    allow_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    allow_headers: ["Content-Type", "Authorization", "Token", "X-Requested-With"]
+    allow_credentials: true
+    max_age: 86400
+
+# MySQL配置
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  user: "root"
+  passwd: "123456"
+  database: "chat_database"
+  charset: "utf8mb4"
+  max_open_conns: 100
+  max_idle_conns: 20
+  conn_max_lifetime: 3600 # 秒
+
+# Redis配置
+redis:
+  host: "192.168.1.212"
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 100
+  idle_timeout: 300 # 秒
+  minIdleconns: 5
+  # 离线消息配置
+  offline_msg_expire: 86400 # 离线消息保存秒数
+  # 限流相关缓存
+  limit_cache_expire: 3600 # 限流缓存秒数
+
+# 存储配置（minio/local）
+storage:
+  type: "local" # minio/local
+  # 本地存储配置
+  local:
+    path: "./uploads" # 存储路径
+    domain: "http://localhost:5625" # 访问域名
+  # MinIO配置
+  minio:
+    endpoint: "127.0.0.1:9000"
+    access_key: "minio-access-key"
+    secret_key: "minio-secret-key"
+    bucket: "chat-im"
+    use_ssl: false
+    domain: "http://localhost:9000" # 访问域名
+  # 文件/图片限制
+  file:
+    max_size: 1048576 # 1M (字节)
+    allow_types: ["txt", "pdf", "doc", "docx", "xml", "csv"]
+  image:
+    max_size: 1048576 # 1M (字节)
+    allow_types: ["gif", "jpg", "jpeg", "png"]
+
+# 加密配置
+crypto:
+  # JWT配置 HS256算法
+  jwt:
+    secret: "your-aes256-secret-key-32bytes-1234567890123456" # 32字节
+    expire: 3600 # token过期秒数
+    refresh_expire: 86400 # 刷新token过期秒数
+  # RSA非对称加密（PKCS8格式）
+  rsa:
+    public_key_path: "./rsa/public.pem"  # 公钥文件路径
+    private_key_path: "./rsa/private.pem"  # 私钥文件路径
+
+# 人机验证（Cloudflare Turnstile）
+cf_turnstile:
+  site_key: "your-cf-site-key"
+  secret_key: "your-cf-secret-key"
+  timeout: 5
+
+# 限流配置（令牌桶算法）
+rate_limit:
+  # 令牌桶基础配置
+  bucket:
+    capacity: 100 # 桶容量
+    rate: 50 # 每秒填充令牌数
+  # 注册/登录限流（IP维度）
+  register_login_ip:
+    limit: 10 # 每小时最大请求数
+    period: 3600 # 周期（秒）
+  # 注册/登录限流（用户维度）
+  register_login_user:
+    limit: 5 # 每小时最大请求数
+    period: 3600 # 周期（秒）
+  # 消息频率限流（每连接）
+  message_conn:
+    limit: 20 # 每分钟最大消息数
+    period: 60 # 周期（秒）
+  # 并发消息处理限流
+  message_concurrent:
+    limit: 50 # 最大并发数
+  # 群聊/用户维度限流
+  group_user:
+    limit: 100 # 每小时最大消息数
+    period: 3600 # 周期（秒）
+
+# 业务配置
+business:
+  # 用户配置
+  user:
+    fuid_len: 16 # fuid长度
+    password_cost: 10 # bcrypt成本
+    friend_max: 800 # 最大好友数
+  # 群聊配置
+  group:
+    quid_len: 16 # quid长度
+    create_max: 5 # 最大创建群数
+    member_max: 200 # 群最大人数
+    admin_max: 5 # 群管理数
+    mute_time_default: 3600 # 默认禁言秒数
+    at_all_limit_admin: 5 # 管理@全体次数/天
+    at_all_limit_owner: 10 # 群主@全体次数/天
+  # VIP配置
+  vip:
+    level_max: 255 # 最大等级
+    exp_per_hour: 1 # 每小时经验值
+    update_interval: 3600 # 经验更新间隔（秒）
+  # 群VIP配置
+  group_vip:
+    level_max: 255 # 最大等级
+    exp_per_hour: 1 # 每小时经验值
+    update_interval: 3600 # 经验更新间隔（秒）
+  # 消息配置
+  message:
+    recall_timeout: 180 # 撤回超时秒数（3分钟）
+    auto_clean:
+      enable: true # 是否启用自动清理
+      days: 30 # 清理天数
+    system_msg:
+      cycle_send: false # 是否循环发送
+      fixed_time: "09:00" # 定点发送时间
+      send_times: 3 # 发送次数
+  # 通知配置
+  notify:
+    ntfy:
+      url: "https://ntfy.sh"
+      topic: "chat-im-notify"
+      enable: true # 是否启用ntfy推送
+
+# 日志配置
+log:
+  path: "./logs" # 日志路径
+  file_name_format: "log_20060102150405" # 时间格式
+  max_size: 10 # 单文件最大大小（MB）
+  max_backups: 30 # 最大备份数
+  max_age: 7 # 保留天数
+  compress: true # 是否压缩
+  level: "info" # debug/info/warn/error/fatal
