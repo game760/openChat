@@ -31,7 +31,7 @@
   
 ### 即时通讯（IM）应用部署说明
 本文档详细说明该 Vue 3 + Quasar IM 应用的部署流程，涵盖环境准备、构建打包、部署方式（本地 / 服务器）、配置调整等核心环节，适配开发 / 测试 / 生产多环境场景。
-一、部署环境准备
+- 一、部署环境准备
 1. 基础环境要求
 依赖项	版本要求	说明
 Node.js	≥ 16.0.0（推荐 18.x LTS）	运行 / 打包 Vue 项目核心环境
@@ -41,37 +41,33 @@ npm/yarn/pnpm	对应 Node 版本兼容版本	包管理工具（推荐 pnpm）
 2. 环境检查
 bash
 运行
-# 检查Node版本
+检查Node版本
 node -v
-# 检查npm版本
+检查npm版本
 npm -v
-# （可选）安装pnpm（推荐）
-npm install -g pnpm
-二、代码拉取与依赖安装
+- 二、代码拉取与依赖安装
 1. 拉取项目代码
 bash
 运行
-# 从Git仓库拉取（示例）
+从Git仓库拉取（示例）
 git clone https://xxx/im-app.git
 cd im-app
 2. 安装项目依赖
 bash
 运行
-# 使用npm
+使用npm
 npm install
-# 或使用pnpm（推荐，速度更快）
-pnpm install
-三、环境配置调整
+- 三、环境配置调整
 1. 核心配置文件
 项目根目录下的 .env/.env.prod/.env.dev 文件，需根据部署环境修改以下核心配置：
 env
-# 后端API基础地址
+ 后端API基础地址
 VITE_API_BASE_URL = "https://im-api.xxx.com"
-# Socket.IO服务地址
+ Socket.IO服务地址
 VITE_SOCKET_URL = "wss://im-socket.xxx.com"
-# 静态资源CDN地址（生产环境可选）
+静态资源CDN地址（生产环境可选）
 VITE_CDN_URL = "https://cdn.xxx.com/im-app"
-# 环境标识（dev/test/prod）
+环境标识（dev/test/prod）
 VITE_ENV = "prod"
 2. 其他配置（可选）
 主题默认配置：修改 src/settings/theme.js 调整默认主题（明暗模式、字体等）；
@@ -81,14 +77,14 @@ VITE_ENV = "prod"
 1. 开发环境打包（测试用）
 bash
 运行
-# Quasar框架打包命令（开发环境）
+Quasar框架打包命令（开发环境）
 quasar build --mode dev
-# 或原生Vue打包（若未用Quasar）
+或原生Vue打包（若未用Quasar）
 npm run build:dev
 2. 生产环境打包（正式部署）
 bash
 运行
-# Quasar框架打包（生产环境，推荐）
+Quasar框架打包（生产环境，推荐）
 quasar build --mode prod
-# 或原生Vue打包
+Vue打包
 npm run build:prod
